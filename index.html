@@ -5,22 +5,65 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Звёздное превращение</title>
 <style>
-  :root { color-scheme: dark; --violet:#b799ff; --cyan:#83eaff; }
-  * { box-sizing:border-box }
-  html,body { margin:0; width:100%; height:100%; overflow:hidden; background:transparent; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-  #stage { position:relative; width:100%; height:100%; min-height:260px; overflow:hidden; isolation:isolate; }
-  canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
-  #glow { position:absolute; inset:-8%; pointer-events:none; background:radial-gradient(ellipse at 42% 46%,rgba(157,102,255,.38),transparent 47%),radial-gradient(ellipse at 59% 54%,rgba(67,208,255,.30),transparent 49%),radial-gradient(ellipse at center,rgba(119,112,255,.22),transparent 68%); filter:blur(9px); animation:breath 4.8s ease-in-out infinite alternate; mix-blend-mode:screen; }
-  @keyframes breath { from{opacity:.48;transform:scale(.91) rotate(-2deg)} to{opacity:1;transform:scale(1.1) rotate(2deg)} }
-  #toolbar { position:absolute; z-index:5; left:12px; top:12px; display:flex; gap:8px; align-items:center; padding:8px; border:1px solid rgba(211,198,255,.25); border-radius:14px; background:rgba(20,16,42,.76); backdrop-filter:blur(14px); color:#f7f1ff; box-shadow:0 8px 30px #09051a44; transition:opacity .2s; }
-  button,.file-label { border:0; border-radius:9px; padding:9px 12px; color:#211338; background:linear-gradient(110deg,#d5c3ff,#a6edff); font:600 13px system-ui; cursor:pointer; white-space:nowrap; }
-  button.secondary { color:#f2eaff; background:#ffffff16; border:1px solid #ffffff26; }
-  input[type=file] { display:none }
-  #hint { color:#e5dcff; font-size:12px; padding:0 5px; }
-  #badge { position:absolute; right:14px; bottom:12px; color:#f8f3ff; font:11px system-ui; opacity:.65; pointer-events:none; text-shadow:0 1px 5px #281455; }
-  .empty { position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; }
-  .empty span { color:#fff; padding:15px 19px; border:1px dashed #d7c8ff88; border-radius:16px; background:#33245055; font-size:14px; text-shadow:0 2px 8px #000; }
-  @media(max-width:480px){#toolbar{left:7px;top:7px;gap:5px;padding:6px}.file-label,button{padding:8px 9px;font-size:12px}#hint{display:none}}
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; width: 100%; height: 100%; overflow: hidden;
+    background: transparent;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  #stage {
+    position: relative; width: 100%; height: 100%; min-height: 260px;
+    overflow: hidden; isolation: isolate;
+  }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #glow {
+    position: absolute; inset: -8%; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 42% 46%, rgba(157,102,255,.38), transparent 47%),
+      radial-gradient(ellipse at 59% 54%, rgba(67,208,255,.30), transparent 49%),
+      radial-gradient(ellipse at center, rgba(119,112,255,.22), transparent 68%);
+    filter: blur(9px);
+    animation: breath 4.8s ease-in-out infinite alternate;
+    mix-blend-mode: screen;
+  }
+  @keyframes breath {
+    from { opacity: .48; transform: scale(.91) rotate(-2deg); }
+    to { opacity: 1; transform: scale(1.1) rotate(2deg); }
+  }
+  #toolbar {
+    position: absolute; z-index: 5; left: 12px; top: 12px;
+    display: flex; gap: 8px; align-items: center; padding: 8px;
+    border: 1px solid rgba(211,198,255,.25); border-radius: 14px;
+    background: rgba(20,16,42,.76); backdrop-filter: blur(14px);
+    color: #f7f1ff; box-shadow: 0 8px 30px #09051a44;
+  }
+  button, .file-label {
+    border: 0; border-radius: 9px; padding: 9px 12px;
+    color: #211338; background: linear-gradient(110deg,#d5c3ff,#a6edff);
+    font: 600 13px system-ui; cursor: pointer; white-space: nowrap;
+  }
+  button.secondary {
+    color: #f2eaff; background: #ffffff16; border: 1px solid #ffffff26;
+  }
+  input[type=file] { display: none; }
+  #hint { color: #e5dcff; font-size: 12px; padding: 0 5px; }
+  #badge {
+    position: absolute; right: 14px; bottom: 12px; color: #f8f3ff;
+    font: 11px system-ui; opacity: .65; pointer-events: none;
+    text-shadow: 0 1px 5px #281455;
+  }
+  .empty { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+  .empty span {
+    color: #fff; padding: 15px 19px; border: 1px dashed #d7c8ff88;
+    border-radius: 16px; background: #33245055; font-size: 14px;
+    text-shadow: 0 2px 8px #000;
+  }
+  @media(max-width:480px) {
+    #toolbar { left: 7px; top: 7px; gap: 5px; padding: 6px; }
+    .file-label, button { padding: 8px 9px; font-size: 12px; }
+    #hint { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -32,78 +75,187 @@
     <label class="file-label" for="file">✦ Выбрать картинку</label>
     <input id="file" type="file" accept="image/png,image/webp,image/jpeg">
     <button id="toggle" class="secondary" type="button">Пауза</button>
-    <button id="save" class="secondary" type="button" title="Скопировать ссылку с выбранной картинкой">Сохранить виджет</button>
+    <button id="save" class="secondary" type="button">Сохранить виджет</button>
     <span id="hint">PNG лучше всего</span>
   </div>
   <div id="badge">Звёздное превращение</div>
 </div>
 <script>
 (() => {
-  const canvas = document.querySelector('#art'), ctx = canvas.getContext('2d');
-  const file = document.querySelector('#file'), empty = document.querySelector('#empty');
-  let img = null, sourceData = '', running = true, w = 0, h = 0, dpr = 1, last = 0;
+  const canvas = document.querySelector('#art');
+  const ctx = canvas.getContext('2d');
+  const file = document.querySelector('#file');
+  const empty = document.querySelector('#empty');
+
+  let img = null;
+  let sourceData = '';
+  let running = true;
+  let w = 0, h = 0, dpr = 1, last = 0;
+
   const embedMode = new URLSearchParams(location.search).has('embed');
-  if (embedMode) { document.querySelector('#toolbar').hidden = true; document.querySelector('#badge').hidden = true; }
-  const stars = Array.from({length:68}, () => ({
-    x:Math.random(), y:Math.random(), r:1.5+Math.random()*3.4,
-    phase:Math.random()*Math.PI*2, speed:.18+Math.random()*.42,
-    hue:Math.random()<.55?190:264
-  }));
-  function resize(){
-    const b=canvas.getBoundingClientRect(); dpr=Math.min(devicePixelRatio||1,2); w=b.width; h=b.height;
-    canvas.width=Math.max(1,Math.round(w*dpr)); canvas.height=Math.max(1,Math.round(h*dpr));
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  if (embedMode) {
+    document.querySelector('#toolbar').hidden = true;
+    document.querySelector('#badge').hidden = true;
   }
-  new ResizeObserver(resize).observe(canvas); resize();
-  function draw(t){
-    requestAnimationFrame(draw); if(!running || t-last<30)return; last=t;
-    ctx.clearRect(0,0,w,h);
-    const time=t/1000;
-    if(img){
-      const fit=Math.min(w*.74/img.width,h*.74/img.height);
-      const iw=img.width*fit, ih=img.height*fit, x=(w-iw)/2, y=(h-ih)/2;
-      // A gently shifting halo keeps the image readable while the edges shimmer.
-      ctx.save(); ctx.globalCompositeOperation='screen';
-      ctx.filter=`blur(${21+Math.sin(time*.8)*7}px)`; ctx.globalAlpha=.78;
-      ctx.drawImage(img,x-iw*.045,y-ih*.045,iw*1.09,ih*1.09);
-      ctx.globalCompositeOperation='screen'; ctx.filter=`blur(${14+Math.cos(time*.65)*5}px)`; ctx.globalAlpha=.58;
-      ctx.drawImage(img,x+iw*.035,y+ih*.025,iw*1.04,ih*1.04); ctx.restore();
-      ctx.save(); ctx.globalAlpha=.72; ctx.filter=`blur(${4.5+Math.abs(Math.sin(time*1.05)) * 3.5}px)`;
-      const bands=48, sh=img.height/bands;
-      for(let i=0;i<bands;i++){
-        const sy=i*sh, wave=Math.sin(time*.72+i*.29)*Math.min(8,iw*.025);
-        const wobble=Math.sin(time*.58+i*.41)*.025;
-        ctx.drawImage(img,0,sy,img.width,sh+1,x+wave,y+(sy/img.height)*ih,iw*(1+wobble),ih/bands+1);
+
+  const stars = Array.from({ length: 68 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: 1.5 + Math.random() * 3.4,
+    phase: Math.random() * Math.PI * 2,
+    speed: .18 + Math.random() * .42,
+    hue: Math.random() < .55 ? 190 : 264
+  }));
+
+  function resize() {
+    const b = canvas.getBoundingClientRect();
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    w = b.width;
+    h = b.height;
+    canvas.width = Math.max(1, Math.round(w * dpr));
+    canvas.height = Math.max(1, Math.round(h * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  function draw(t) {
+    requestAnimationFrame(draw);
+    if (!running || t - last < 30) return;
+    last = t;
+    ctx.clearRect(0, 0, w, h);
+    const time = t / 1000;
+
+    if (img) {
+      const fit = Math.min(w * .74 / img.width, h * .74 / img.height);
+      const iw = img.width * fit;
+      const ih = img.height * fit;
+      const x = (w - iw) / 2;
+      const y = (h - ih) / 2;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.filter = `blur(${21 + Math.sin(time * .8) * 7}px)`;
+      ctx.globalAlpha = .78;
+      ctx.drawImage(img, x - iw * .045, y - ih * .045, iw * 1.09, ih * 1.09);
+
+      ctx.filter = `blur(${14 + Math.cos(time * .65) * 5}px)`;
+      ctx.globalAlpha = .58;
+      ctx.drawImage(img, x + iw * .035, y + ih * .025, iw * 1.04, ih * 1.04);
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = .72;
+      ctx.filter = `blur(${4.5 + Math.abs(Math.sin(time * 1.05)) * 3.5}px)`;
+      const bands = 48;
+      const sh = img.height / bands;
+
+      for (let i = 0; i < bands; i++) {
+        const sy = i * sh;
+        const wave = Math.sin(time * .72 + i * .29) * Math.min(8, iw * .025);
+        const wobble = Math.sin(time * .58 + i * .41) * .025;
+        ctx.drawImage(
+          img, 0, sy, img.width, sh + 1,
+          x + wave, y + (sy / img.height) * ih,
+          iw * (1 + wobble), ih / bands + 1
+        );
       }
       ctx.restore();
-      // Small sparkling points orbit the silhouette.
-      stars.forEach((s,i)=>{
-        const a=time*s.speed+s.phase, rx=iw*(.58+((i%5)*.045)), ry=ih*(.58+((i%4)*.05));
-        const sx=w/2+Math.cos(a)*rx, sy=h/2+Math.sin(a*1.13)*ry;
-        const pulse=.38+.62*(.5+.5*Math.sin(time*.8+s.phase));
-        ctx.save(); ctx.globalAlpha=pulse; ctx.shadowBlur=13+s.r*3.5;
-        ctx.shadowColor=s.hue===190?'#8beaff':'#c6a4ff';
-        ctx.fillStyle=s.hue===190?'#b8f4ff':'#e0caff';
-        ctx.beginPath(); ctx.arc(sx,sy,s.r*pulse,0,Math.PI*2); ctx.fill();
-        if(i%3===0){ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1.25;ctx.beginPath();ctx.moveTo(sx-6,sy);ctx.lineTo(sx+6,sy);ctx.moveTo(sx,sy-6);ctx.lineTo(sx,sy+6);ctx.stroke()}
+
+      stars.forEach((s, i) => {
+        const a = time * s.speed + s.phase;
+        const rx = iw * (.58 + (i % 5) * .045);
+        const ry = ih * (.58 + (i % 4) * .05);
+        const sx = w / 2 + Math.cos(a) * rx;
+        const sy = h / 2 + Math.sin(a * 1.13) * ry;
+        const pulse = .38 + .62 * (.5 + .5 * Math.sin(time * .8 + s.phase));
+
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.shadowBlur = 13 + s.r * 3.5;
+        ctx.shadowColor = s.hue === 190 ? '#8beaff' : '#c6a4ff';
+        ctx.fillStyle = s.hue === 190 ? '#b8f4ff' : '#e0caff';
+        ctx.beginPath();
+        ctx.arc(sx, sy, s.r * pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (i % 3 === 0) {
+          ctx.strokeStyle = ctx.fillStyle;
+          ctx.lineWidth = 1.25;
+          ctx.beginPath();
+          ctx.moveTo(sx - 6, sy);
+          ctx.lineTo(sx + 6, sy);
+          ctx.moveTo(sx, sy - 6);
+          ctx.lineTo(sx, sy + 6);
+          ctx.stroke();
+        }
         ctx.restore();
       });
     } else {
-      stars.forEach(s=>{ const a=.22+.6*(.5+.5*Math.sin(time*s.speed+s.phase));ctx.fillStyle=`hsla(${s.hue},100%,85%,${a})`;ctx.beginPath();ctx.arc(s.x*w,s.y*h,s.r,0,Math.PI*2);ctx.fill(); });
+      stars.forEach(s => {
+        const a = .22 + .6 * (.5 + .5 * Math.sin(time * s.speed + s.phase));
+        ctx.fillStyle = `hsla(${s.hue},100%,85%,${a})`;
+        ctx.beginPath();
+        ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
   }
+
   requestAnimationFrame(draw);
-  function loadSource(src){ const next=new Image(); next.onload=()=>{img=next;sourceData=src;empty.style.display='none'}; next.src=src; }
-  file.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>loadSource(reader.result);reader.readAsDataURL(f)});
-  document.querySelector('#toggle').onclick=e=>{running=!running;e.currentTarget.textContent=running?'Пауза':'Продолжить'};
-  document.querySelector('#save').onclick=async e=>{
-    if(!img){ document.querySelector('#hint').textContent='Сначала загрузи картинку'; return; }
-    // Store the image in the URL fragment so this exact widget can be embedded later.
-    try { const url=new URL(location.href); url.searchParams.set('embed','1'); url.hash=encodeURIComponent(sourceData); await navigator.clipboard.writeText(url.toString()); document.querySelector('#hint').textContent='Ссылка виджета скопирована'; }
-    catch { document.querySelector('#hint').textContent='Открой страницу по HTTPS, чтобы скопировать ссылку'; }
+
+  function loadSource(src, fallback) {
+    const next = new Image();
+    next.onload = () => {
+      img = next;
+      sourceData = src;
+      empty.style.display = 'none';
+    };
+    next.onerror = () => {
+      if (fallback) loadSource(fallback);
+    };
+    next.src = src;
+  }
+
+  file.addEventListener('change', e => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => loadSource(reader.result);
+    reader.readAsDataURL(f);
+  });
+
+  document.querySelector('#toggle').onclick = e => {
+    running = !running;
+    e.currentTarget.textContent = running ? 'Пауза' : 'Продолжить';
   };
-  if(location.hash.length>20){ try{loadSource(decodeURIComponent(location.hash.slice(1)))}catch{loadSource('assets/mouse.png')} }
-  else { loadSource('assets/mouse.png'); }
+
+  document.querySelector('#save').onclick = async () => {
+    if (!img) {
+      document.querySelector('#hint').textContent = 'Сначала загрузи картинку';
+      return;
+    }
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('embed', '1');
+      url.hash = encodeURIComponent(sourceData);
+      await navigator.clipboard.writeText(url.toString());
+      document.querySelector('#hint').textContent = 'Ссылка виджета скопирована';
+    } catch {
+      document.querySelector('#hint').textContent = 'Открой страницу по HTTPS, чтобы скопировать ссылку';
+    }
+  };
+
+  if (location.hash.length > 20) {
+    try {
+      loadSource(decodeURIComponent(location.hash.slice(1)));
+    } catch {
+      loadSource('mouse.png');
+    }
+  } else {
+    loadSource('mouse.png');
+  }
 })();
 </script>
 </body>
